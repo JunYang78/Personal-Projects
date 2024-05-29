@@ -1,34 +1,19 @@
-import secrets
+import pyautogui
+import time
+import random
 
-# Function to generate a random secret key
-def generate_secret_key():
-	return secrets.token_hex(16) # 16 bytes (32 hex characters)
+chars = "abcdefghijklmnopqrstuvwxyz"
+chars_list = list(chars)
 
-# Function to generate a One Time Password (OTP) using the secret key
-def generate_otp(secret_key, length=6):
-	# Defining the characters allowed in the OTP
-	allowed_characters = "0123456789"
+password = pyautogui.password("Enter a Password : ")
 
-	# Generating a random OTP using the secret key and allowed characters
-	otp = ''.join(secrets.choice(allowed_characters) for _ in range(length))
-	
-	return otp
+guess_password = ""
 
-# Example usage
-if __name__ == "__main__":
-	# Generate a random secret key (this should be kept secure)
-	secret_key = generate_secret_key()
-	print(secret_key)
+while(guess_password != password):
+    guess_password = random.choices(chars_list, k=len(password))
 
-	# Simulate sending the OTP to the user
-	otp = generate_otp(secret_key)
-	print(otp)
+    print("DECRYPTING"+ str(guess_password)+ "PASSWORD")
 
-	# Simulating user input for OTP verification
-	user_input = input("Please enter the received OTP: ")
-
-	# Verify the OTP entered by the user
-	if user_input == otp:
-		print("OTP verification successful. Access granted!")
-	else:
-		print("OTP verification failed. Access denied!")
+    if(guess_password == list(password)):
+        print("Your password is : "+ "".join(guess_password))
+        break

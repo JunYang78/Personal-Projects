@@ -1,15 +1,11 @@
 from flask import Flask, render_template, request
 from cryptography.fernet import Fernet
-import atexit
 
 app = Flask(__name__)
 
 @app.route('/') #Render html page
 def index():
     return render_template('index.html')
-
-def cleanup(): #clean up GPIO pins
-    print("Cleaning up GPIO")
 
 @app.route('/encryptor', methods=['GET', 'POST'])
 def encryptor():
@@ -19,12 +15,8 @@ def encryptor():
     if request.method == 'POST':
         password = request.form['password']
         usertext = request.form['usertext']
-        print(usertext)
-        print(password)
         if usertext and password != "":
             encText = textEncryption(usertext,password).decode('utf-8')
-
-        print("Encrypted text:", encText)
 
         return render_template('encryptor.html', encText=encText)
     
@@ -38,12 +30,12 @@ def decryptor():
     if request.method == 'POST':
         password = request.form['password']
         usertext = request.form['usertext']
-        print(usertext)
-        print(password)
         if usertext and password != "":
-            decText = textDecryption(usertext, password)
+            try:
+                decText = textDecryption(usertext, password)
+            except:
+                decText = "Incorrect Cipher text format."
 
-        print("Decrypted text:", decText)
         return render_template('encryptor.html', decText=decText)
     
     return render_template('encryptor.html')
@@ -61,16 +53,16 @@ def textDecryption(text, password):
     decText = fernet.decrypt(text).decode()
 
     if password in decText:
-        decText = decText.replace(password, "")  # Remove the password from the decrypted text
+        passcount = len(password)
+        decText = decText[:-passcount]  # Remove the password from the decrypted text
         return decText
     else: 
-        decText = "Error"
+        decText = "Error. Password is Wrong."
         return decText
     
 @app.route('/ipdomaincheck')
 def ipdomaincheck():
     return render_template('ipdomaincheck.html')
-
 
 if __name__ == '__main__':
 
@@ -81,11 +73,5 @@ if __name__ == '__main__':
     except KeyboardInterrupt:
 
         print('Interrupted')
-
-    finally:
-
-        # Register the cleanup function
-
-        atexit.register(cleanup)
 
 
