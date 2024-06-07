@@ -1,11 +1,13 @@
-class Button():
-	def __init__(self, pos, text_input, base_color, hovering_color):
-		self.x_pos = pos[0]
-		self.y_pos = pos[1]
-		self.base_color, self.hovering_color = base_color, hovering_color
-		self.text_input = text_input
+#Import required Image library
+from PIL import Image, ImageFilter
 
-	def update(self, screen):
-		if self.image is not None:
-			screen.blit(self.image, self.rect)
-		screen.blit(self.text, self.text_rect)
+#Open existing image
+OriImage = Image.open("Autoclicker/img/bg.png")
+OriImage.show()
+
+#Applying GaussianBlur filter
+gaussImage = OriImage.filter(ImageFilter.GaussianBlur(3))
+gaussImage.show()
+
+#Save Gaussian Blur Image
+gaussImage.save("Autoclicker/img/bg_blur.png")
